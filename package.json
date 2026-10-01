@@ -18,7 +18,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/fbartho/danger-plugin-jest.git"
+    "url": "git+https://github.com/fbartho/danger-plugin-jest.git"
   },
   "keywords": [
     "danger",
