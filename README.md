@@ -1,10 +1,13 @@
-# danger-plugin-jest
+# @fbartho/danger-plugin-jest
 
-[![Build Status](https://travis-ci.org/macklinu/danger-plugin-jest.svg?branch=master)](https://travis-ci.org/macklinu/danger-plugin-jest)
-[![npm version](https://badge.fury.io/js/danger-plugin-jest.svg)](https://badge.fury.io/js/danger-plugin-jest)
-[![semantic-release](https://img.shields.io/badge/%20%20%F0%9F%93%A6%F0%9F%9A%80-semantic--release-e10079.svg)](https://github.com/semantic-release/semantic-release)
+[![npm version](https://img.shields.io/npm/v/@fbartho/danger-plugin-jest.svg)](https://www.npmjs.com/package/@fbartho/danger-plugin-jest)
 
 > [Danger](https://github.com/danger/danger-js) plugin for Jest
+
+**Forked to bug-fix** [`macklinu/danger-plugin-jest`](https://github.com/macklinu/danger-plugin-jest), published as [`@fbartho/danger-plugin-jest`](https://www.npmjs.com/package/@fbartho/danger-plugin-jest). The fork adds:
+
+- Failing tests are reported when Danger runs without a pull request (`danger local`, or `danger ci` on a GitHub Actions push).
+- A `repoRoot` option sets the directory that reported file paths are relative to.
 
 ## Usage
 
@@ -22,7 +25,7 @@ like normal, but will also create a file with the full test results after.
 Install this Danger plugin:
 
 ```sh
-yarn add danger-plugin-jest --dev
+yarn add @fbartho/danger-plugin-jest --dev
 ```
 
 By default, this package will assume you've set the filename as `test-results.json`, but you can use any path.
@@ -30,7 +33,7 @@ By default, this package will assume you've set the filename as `test-results.js
 ```js
 // dangerfile.js
 import path from 'path'
-import jest from 'danger-plugin-jest'
+import jest from '@fbartho/danger-plugin-jest'
 
 // Default
 jest()
@@ -44,11 +47,11 @@ Reported file paths are relative to the directory Danger runs in. When that is n
 jest({ repoRoot: path.resolve(__dirname, '../..') })
 ```
 
-See [`src/index.ts`](https://github.com/macklinu/danger-plugin-jest/blob/master/src/index.ts) for more details.
+See [`src/index.ts`](https://github.com/fbartho/danger-plugin-jest/blob/main/src/index.ts) for more details.
 
 ## Changelog
 
-See the GitHub [release history](https://github.com/macklinu/danger-plugin-jest/releases).
+Version 1.4.0 adds the fixes listed above. Earlier versions are in the upstream [release history](https://github.com/macklinu/danger-plugin-jest/releases).
 
 ## Development
 
@@ -56,6 +59,6 @@ Install [Yarn](https://yarnpkg.com/en/), and install the dependencies - `yarn in
 
 Run the [Jest](https://facebook.github.io/jest/) test suite with `yarn test`.
 
-This project uses [semantic-release](https://github.com/semantic-release/semantic-release) for automated NPM package publishing.
+Releases are published to npm manually with `npm publish`.
 
 :heart:
