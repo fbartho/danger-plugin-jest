@@ -16,12 +16,15 @@ declare function message(message?: string): void
 export interface IPluginConfig {
   testResultsJsonPath: string
   showSuccessMessage: boolean
+  /** The repository root, which reported file paths are relative to. */
+  repoRoot: string
 }
 
 export default function jest(config: Partial<IPluginConfig> = {}) {
   const {
     testResultsJsonPath = 'test-results.json',
     showSuccessMessage = false,
+    repoRoot = process.cwd(),
   } = config
   try {
     const jsonFileContents = fs.readFileSync(testResultsJsonPath, 'utf8')
@@ -33,9 +36,9 @@ export default function jest(config: Partial<IPluginConfig> = {}) {
 
     const isModernFormatResults = jsonResults.testResults[0].testResults
     if (isModernFormatResults) {
-      presentErrorsForNewStyleResults(jsonResults)
+      presentErrorsForNewStyleResults(jsonResults, repoRoot)
     } else {
-      presentErrorsForOldStyleResults(jsonResults as any)
+      presentErrorsForOldStyleResults(jsonResults as any, repoRoot)
     }
   } catch (e) {
     // tslint:disable-next-line:no-console
@@ -60,11 +63,14 @@ const jestSuccessFeedback = (
   }
 }
 
-const presentErrorsForOldStyleResults = (jsonResults: IJestTestOldResults) => {
+const presentErrorsForOldStyleResults = (
+  jsonResults: IJestTestOldResults,
+  repoRoot: string
+) => {
   const failing = jsonResults.testResults.filter(tr => tr.status === 'failed')
 
   failing.forEach(results => {
-    const relativeFilePath = path.relative(process.cwd(), results.name)
+    const relativeFilePath = path.relative(repoRoot, results.name)
     const failedAssertions = results.assertionResults.filter(
       r => r.status === 'failed'
     )
@@ -76,11 +82,14 @@ const presentErrorsForOldStyleResults = (jsonResults: IJestTestOldResults) => {
   })
 }
 
-const presentErrorsForNewStyleResults = (jsonResults: IJestTestResults) => {
+const presentErrorsForNewStyleResults = (
+  jsonResults: IJestTestResults,
+  repoRoot: string
+) => {
   const failing = jsonResults.testResults.filter(tr => tr.numFailingTests > 0)
 
   failing.forEach(results => {
-    const relativeFilePath = path.relative(process.cwd(), results.testFilePath)
+    const relativeFilePath = path.relative(repoRoot, results.testFilePath)
     const failedAssertions = results.testResults.filter(
       r => r.status === 'failed'
     )
@@ -89,8 +98,14 @@ const presentErrorsForNewStyleResults = (jsonResults: IJestTestResults) => {
   })
 }
 
+// `danger local` has no `danger.github`; a GitHub Actions push has no `danger.github.pr`.
+const hasPullRequest = (): boolean => !!(danger.github && danger.github.pr)
+
 // e.g. https://github.com/orta/danger-plugin-jest/blob/master/src/__tests__/fails.test.ts
 const linkToTest = (file: string, msg: string, title: string) => {
+  if (!hasPullRequest()) {
+    return title
+  }
   const line = lineOfError(msg, file)
   const githubRoot = danger.github.pr.head.repo.html_url.split(
     danger.github.pr.head.repo.owner.login
@@ -132,7 +147,9 @@ const fileToFailString = (
   path: string,
   failedAssertions: IInsideFileTestResults[]
 ): string => `
-<b>🃏 FAIL</b> in ${danger.github.utils.fileLinks([path])}
+<b>🃏 FAIL</b> in ${
+  hasPullRequest() ? danger.github.utils.fileLinks([path]) : `\`${path}\``
+}
 
 ${failedAssertions.map(a => assertionFailString(path, a)).join('\n\n')}
 `
