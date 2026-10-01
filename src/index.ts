@@ -89,8 +89,14 @@ const presentErrorsForNewStyleResults = (jsonResults: IJestTestResults) => {
   })
 }
 
+// `danger local` has no `danger.github`; a GitHub Actions push has no `danger.github.pr`.
+const hasPullRequest = (): boolean => !!(danger.github && danger.github.pr)
+
 // e.g. https://github.com/orta/danger-plugin-jest/blob/master/src/__tests__/fails.test.ts
 const linkToTest = (file: string, msg: string, title: string) => {
+  if (!hasPullRequest()) {
+    return title
+  }
   const line = lineOfError(msg, file)
   const githubRoot = danger.github.pr.head.repo.html_url.split(
     danger.github.pr.head.repo.owner.login
@@ -132,7 +138,9 @@ const fileToFailString = (
   path: string,
   failedAssertions: IInsideFileTestResults[]
 ): string => `
-<b>🃏 FAIL</b> in ${danger.github.utils.fileLinks([path])}
+<b>🃏 FAIL</b> in ${
+  hasPullRequest() ? danger.github.utils.fileLinks([path]) : `\`${path}\``
+}
 
 ${failedAssertions.map(a => assertionFailString(path, a)).join('\n\n')}
 `

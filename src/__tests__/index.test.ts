@@ -96,6 +96,32 @@ test('can create links for hosted github', () => {
   )
 })
 
+test('reports failing tests without a pull request', () => {
+  delete global['danger'].github.pr
+  jestResults({
+    testResultsJsonPath: fixture('failing-tests.json'),
+  })
+  expect(global['fail']).toHaveBeenCalledWith(
+    expect.stringMatching(/FAIL<\/b> in `.*\/file-utils\.test\.ts`/)
+  )
+  expect(global['fail']).not.toHaveBeenCalledWith(
+    expect.stringMatching(/Could not read test results/)
+  )
+})
+
+test('reports failing tests without GitHub', () => {
+  global['danger'] = {}
+  jestResults({
+    testResultsJsonPath: fixture('failing-tests.json'),
+  })
+  expect(global['fail']).toHaveBeenCalledWith(
+    expect.stringMatching(/FAIL<\/b> in `.*\/file-utils\.test\.ts`/)
+  )
+  expect(global['fail']).not.toHaveBeenCalledWith(
+    expect.stringMatching(/Could not read test results/)
+  )
+})
+
 test.skip('Fails 6', () => {
   expect({ v: 'asda' }).toContain('s')
 })
