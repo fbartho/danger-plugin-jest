@@ -38,12 +38,6 @@ jest()
 jest({ testResultsJsonPath: path.resolve(__dirname, 'tests/results.json') })
 ```
 
-Reported file paths are relative to the directory Danger runs in. When that is not the repository root, pass the root:
-
-```js
-jest({ repoRoot: path.resolve(__dirname, '../..') })
-```
-
 See [`src/index.ts`](https://github.com/macklinu/danger-plugin-jest/blob/master/src/index.ts) for more details.
 
 ## Changelog
