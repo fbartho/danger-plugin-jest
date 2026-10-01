@@ -96,6 +96,18 @@ test('can create links for hosted github', () => {
   )
 })
 
+test('links files relative to the repository root', () => {
+  jestResults({
+    testResultsJsonPath: fixture('failing-tests.json'),
+    repoRoot: '/Users/orta/dev/projects/danger/danger-js',
+  })
+  expect(global['fail']).toHaveBeenCalledWith(
+    expect.stringContaining(
+      "href='https://github.com/repo/slug/blob/branch/source/commands/utils/_tests/file-utils.test.ts#L24'"
+    )
+  )
+})
+
 test('reports failing tests without a pull request', () => {
   delete global['danger'].github.pr
   jestResults({
