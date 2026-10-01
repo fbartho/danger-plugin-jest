@@ -4,10 +4,7 @@
 
 > [Danger](https://github.com/danger/danger-js) plugin for Jest
 
-**Forked to bug-fix** [`macklinu/danger-plugin-jest`](https://github.com/macklinu/danger-plugin-jest), published as [`@fbartho/danger-plugin-jest`](https://www.npmjs.com/package/@fbartho/danger-plugin-jest). The fork adds:
-
-- Failing tests are reported when Danger runs without a pull request (`danger local`, or `danger ci` on a GitHub Actions push).
-- A `repoRoot` option sets the directory that reported file paths are relative to.
+**Forked to bug-fix** [`macklinu/danger-plugin-jest`](https://github.com/macklinu/danger-plugin-jest), published as [`@fbartho/danger-plugin-jest`](https://www.npmjs.com/package/@fbartho/danger-plugin-jest). The fork reports failing tests when Danger runs without a pull request (`danger local`, or `danger ci` on a GitHub Actions push).
 
 ## Usage
 
@@ -41,17 +38,11 @@ jest()
 jest({ testResultsJsonPath: path.resolve(__dirname, 'tests/results.json') })
 ```
 
-Reported file paths are relative to the directory Danger runs in. When that is not the repository root, pass the root:
-
-```js
-jest({ repoRoot: path.resolve(__dirname, '../..') })
-```
-
 See [`src/index.ts`](https://github.com/fbartho/danger-plugin-jest/blob/main/src/index.ts) for more details.
 
 ## Changelog
 
-Version 1.4.0 adds the fixes listed above. Earlier versions are in the upstream [release history](https://github.com/macklinu/danger-plugin-jest/releases).
+Version 1.4.1 adds the fix listed above. Earlier versions are in the upstream [release history](https://github.com/macklinu/danger-plugin-jest/releases).
 
 ## Development
 

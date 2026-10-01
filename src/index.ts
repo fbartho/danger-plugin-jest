@@ -16,15 +16,12 @@ declare function message(message?: string): void
 export interface IPluginConfig {
   testResultsJsonPath: string
   showSuccessMessage: boolean
-  /** The repository root, which reported file paths are relative to. */
-  repoRoot: string
 }
 
 export default function jest(config: Partial<IPluginConfig> = {}) {
   const {
     testResultsJsonPath = 'test-results.json',
     showSuccessMessage = false,
-    repoRoot = process.cwd(),
   } = config
   try {
     const jsonFileContents = fs.readFileSync(testResultsJsonPath, 'utf8')
@@ -36,9 +33,9 @@ export default function jest(config: Partial<IPluginConfig> = {}) {
 
     const isModernFormatResults = jsonResults.testResults[0].testResults
     if (isModernFormatResults) {
-      presentErrorsForNewStyleResults(jsonResults, repoRoot)
+      presentErrorsForNewStyleResults(jsonResults)
     } else {
-      presentErrorsForOldStyleResults(jsonResults as any, repoRoot)
+      presentErrorsForOldStyleResults(jsonResults as any)
     }
   } catch (e) {
     // tslint:disable-next-line:no-console
@@ -63,14 +60,11 @@ const jestSuccessFeedback = (
   }
 }
 
-const presentErrorsForOldStyleResults = (
-  jsonResults: IJestTestOldResults,
-  repoRoot: string
-) => {
+const presentErrorsForOldStyleResults = (jsonResults: IJestTestOldResults) => {
   const failing = jsonResults.testResults.filter(tr => tr.status === 'failed')
 
   failing.forEach(results => {
-    const relativeFilePath = path.relative(repoRoot, results.name)
+    const relativeFilePath = path.relative(process.cwd(), results.name)
     const failedAssertions = results.assertionResults.filter(
       r => r.status === 'failed'
     )
@@ -82,14 +76,11 @@ const presentErrorsForOldStyleResults = (
   })
 }
 
-const presentErrorsForNewStyleResults = (
-  jsonResults: IJestTestResults,
-  repoRoot: string
-) => {
+const presentErrorsForNewStyleResults = (jsonResults: IJestTestResults) => {
   const failing = jsonResults.testResults.filter(tr => tr.numFailingTests > 0)
 
   failing.forEach(results => {
-    const relativeFilePath = path.relative(repoRoot, results.testFilePath)
+    const relativeFilePath = path.relative(process.cwd(), results.testFilePath)
     const failedAssertions = results.testResults.filter(
       r => r.status === 'failed'
     )
