@@ -16,8 +16,6 @@ script:
   - yarn run build
   - npx danger ci
   - rm -f test-results.json
-after_success:
-  - npm run semantic-release
 branches:
   except:
     - /^v\d+\.\d+\.\d+$/
